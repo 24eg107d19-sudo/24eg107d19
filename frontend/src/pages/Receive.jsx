@@ -1,0 +1,6 @@
+import React, { useEffect, useRef, useState } from "react";
+import { QRCodeCanvas } from "qrcode.react";
+import Layout from "../components/Layout.jsx";
+import { api, getSession } from "../api.js";
+
+export default function Receive(){const session=getSession();const [wallet,setWallet]=useState(null);const canvas=useRef(null);useEffect(()=>{api.wallet(session.userId).then(setWallet).catch(console.error)},[]);function download(){const c=canvas.current?.querySelector("canvas");if(!c)return;const a=document.createElement("a");a.download="my-wallet-qr.png";a.href=c.toDataURL("image/png");a.click()}return <Layout title="Receive" subtitle="Share your wallet address or QR code."><div className="receive-layout"><div className="panel center"><h2>Your wallet QR</h2><p className="muted">A student can scan this to get your wallet address.</p><div ref={canvas} className="qr-box"><QRCodeCanvas value={wallet?.address||"WALLET"} size={230} includeMargin/></div><button className="secondary-btn" onClick={download}>Download QR</button></div><div className="panel"><h2>Wallet details</h2><div className="copy-box"><span>Wallet address</span><strong>{wallet?.address||"Loading..."}</strong></div><p className="muted">Only share your wallet address. Your password should remain private.</p></div></div></Layout>}
